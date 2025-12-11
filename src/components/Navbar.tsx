@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X, AlertCircle, Search } from "lucide-react";
 
 interface Ad {
@@ -9,7 +10,6 @@ interface Ad {
   imageSrc?: string;
   link: string;
 }
-
 
 const adsData: Ad[] = [
   {
@@ -61,21 +61,23 @@ const Navbar: React.FC = () => {
   };
 
   const activeAd = adsData[activeAdIndex];
- 
+
   useEffect(() => {
-  if (!showAds) return;
+    if (!showAds) return;
 
-  const interval = setInterval(() => {
-    setActiveAdIndex((prev) => (prev + 1) % adsData.length);
-  }, 5000); // 5 seconds per slide
+    const interval = setInterval(() => {
+      setActiveAdIndex((prev) => (prev + 1) % adsData.length);
+    }, 5000);
 
-  return () => clearInterval(interval);
-}, [showAds]);
+    return () => clearInterval(interval);
+  }, [showAds]);
+
+  const location = useLocation();
+
 
   return (
     <div>
       {/* Ads Section */}
-      
       {showAds && (
         <div className="w-full flex justify-center items-center mt-2">
           <div
@@ -130,7 +132,7 @@ const Navbar: React.FC = () => {
 
       {/* Navbar */}
       <nav
-        className={`bg-white shadow-md border-b border-gray-200 w-full transform transition-transform duration-500 ease-in-out ${
+        className={`bg-white shadow-md border-b border-gray-300 w-full transform transition-transform duration-500 ease-in-out ${
           fixedNav
             ? `fixed top-0 left-0 z-50 ${showNav ? "translate-y-0" : "-translate-y-20"}`
             : "relative translate-y-0"
@@ -144,19 +146,21 @@ const Navbar: React.FC = () => {
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
                 aria-label="Toggle Menu"
-                className=" z-50"
+                className="z-50"
               >
-                {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                {menuOpen ? <X className="w-6 h-6 text-green-500" /> : <Menu className="w-6 h-6 text-green-500" />}
               </button>
 
               {/* Logo */}
-              <a href="/" className="flex items-center flex-shrink-0">
+              <Link to="/" className="flex items-center flex-shrink-0">
                 <img src="/b.PNG" alt="Logo" className="h-10 w-auto" />
-              </a>
+              </Link>
 
               {/* Desktop Links */}
               <div className="hidden md:flex items-center gap-4 text-sm">
+                
                 {[
+                  "Home",
                   "Africa",
                   "Europe",
                   "Sports",
@@ -168,30 +172,41 @@ const Navbar: React.FC = () => {
                   "Health",
                   "Video",
                   "Entertainment",
-              
                 ].map((item) => (
-                  <a key={item} href="#" className="hover:text-blue-600">
+                  <Link
+                    key={item}
+                    to={item === "Home" ? "/" : `/${item.toLowerCase()}`}
+                    className={`
+                      hover:text-blue-600 transition 
+                      ${
+                        location.pathname === (item === "Home" ? "/" : `/${item.toLowerCase()}`)
+                          ? "text-red-700 font-bold"
+                          : "text-gray-800"
+                      }
+                    `}
+                  >
                     {item}
-                  </a>
+                  </Link>
+
+
                 ))}
-                {/* <p className="ml-2 text-gray-600">More</p> */}
               </div>
             </div>
 
             {/* Right Section */}
-            <div className="flex items-center  gap-4">
+            <div className="flex items-center gap-4">
               <a
                 href="#"
                 className="hidden md:inline-flex items-center gap-2 text-sm hover:text-blue-600 leading-none"
               >
-                <span className="relative flex items-center justify-center h-3 w-3 flex-shrink-0">
+                <span className="relative flex items-center justify-center h-3 w-3">
                   <span className="absolute inline-flex rounded-full h-full w-full bg-red-400 opacity-75 animate-ping"></span>
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600"></span>
                 </span>
-                <span className="align-middle font-bold">Live TV</span>
+                <span className="font-bold">Live TV</span>
               </a>
 
-              <a href="#" className="hidden md:inline text-sm hover:text-blue-600 font-bold">
+              <a href="#" className="hidden md:inline text-green-600 text-sm hover:text-blue-600 font-bold">
                 Audio
                 <span className="w-2 h-2 bg-red-500 rounded-full"></span>
               </a>
@@ -200,17 +215,15 @@ const Navbar: React.FC = () => {
                 <Search className="w-5 h-5" />
               </button>
 
-              <a href="#">
-                <button className="px-4 py-2 border rounded-md hover:bg-gray-100 transition font-bold">
-                  Log In
-                </button>
-              </a>
+              <button className="px-4 py-2 border rounded-md hover:bg-gray-100 transition font-bold">
+                Log In
+              </button>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Mobile Menu Panel */}
+      {/* Mobile Menu */}
       <div
         className={`fixed top-0 left-0 h-full w-full bg-white z-40 transform transition-transform duration-300 ease-in-out md:hidden ${
           menuOpen ? "translate-x-0" : "-translate-x-full"
@@ -219,13 +232,19 @@ const Navbar: React.FC = () => {
         <div className="px-6 py-8 flex flex-col gap-6">
           <button
             onClick={() => setMenuOpen(false)}
-            className="self-end p-2 rounded-md hover:bg-gray-100 transition"
+            className={`self-end p-2 rounded-md transition hover:bg-gray-100 ${
+              location.pathname === "/" ? "text-red-600 font-bold" : "text-gray-800"
+            }`}
           >
             <X className="w-6 h-6" />
           </button>
+
+
           {[
-            "US",
-            "World",
+            "Home",
+            "Africa",
+            "Europe",
+            "Sports",
             "Politics",
             "Business",
             "Opinion",
@@ -233,18 +252,16 @@ const Navbar: React.FC = () => {
             "Entertainment",
             "Style",
             "Travel",
-            "Sports",
             "Video",
-            "More",
           ].map((item) => (
-            <a
+            <Link
               key={item}
-              href="#"
-              className="text-lg font-semibold text-gray-800 hover:text-blue-600 transition"
+              to={`/${item.toLowerCase()}`}
               onClick={() => setMenuOpen(false)}
+              className="text-lg font-semibold text-gray-800 hover:text-blue-600 transition"
             >
               {item}
-            </a>
+            </Link>
           ))}
         </div>
       </div>
