@@ -7,6 +7,7 @@ backup_*.zip
 test_data/
 restored/
 restored_test/
+example_data/
 
 # Python
 __pycache__/
