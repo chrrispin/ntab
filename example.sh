@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e  # Exit on any command failure
+
 # Example usage of New Time Africa Backup System
 
 echo "=== New Time Africa Backup System - Example Usage ==="

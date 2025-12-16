@@ -184,15 +184,25 @@ class BackupSystem:
         print(f"Restoring backup from: {backup_file}")
         print(f"Restore location: {restore_path}")
         
-        if backup_file.suffix == '.gz' and '.tar' in backup_file.name:
+        # Better file type detection using suffixes
+        if backup_file.suffixes[-2:] == ['.tar', '.gz'] or backup_file.suffix == '.tgz':
             with tarfile.open(backup_file, 'r:gz') as tar:
                 tar.extractall(restore_path)
         elif backup_file.suffix == '.zip':
             with zipfile.ZipFile(backup_file, 'r') as zipf:
                 zipf.extractall(restore_path)
         else:
-            # Assume directory backup
-            shutil.copytree(backup_file, restore_path / backup_file.name, dirs_exist_ok=True)
+            # For directory backups, copy contents directly to restore_path
+            if backup_file.is_dir():
+                for item in backup_file.iterdir():
+                    dest = restore_path / item.name
+                    if item.is_file():
+                        shutil.copy2(item, dest)
+                    else:
+                        shutil.copytree(item, dest, dirs_exist_ok=True)
+            else:
+                # Single file backup
+                shutil.copy2(backup_file, restore_path)
         
         print(f"✓ Backup restored successfully to: {restore_path}")
         return True
