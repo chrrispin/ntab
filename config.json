@@ -1,0 +1,7 @@
+{
+    "backup_dir": "backups",
+    "compression": "tar.gz",
+    "include_timestamp": true,
+    "sources": [],
+    "description": "New Time Africa Backup System Configuration"
+}
